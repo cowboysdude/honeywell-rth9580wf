@@ -1,6 +1,6 @@
 /**
  *  Total Comfort API
- *   
+ *
  *  Based on Code by Eric Thomas
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -17,7 +17,7 @@ preferences {
     input("username", "text", title: "Username", description: "Your Total Comfort User Name")
     input("password", "password", title: "Password", description: "Your Total Comfort password")
     input("honeywelldevice", "text", title: "Device ID", description: "Your Device ID")
-    
+
 }
 metadata {
   definition (name: "Total Comfort API", namespace: "Total Comfort API", author: "Eric Thomas") {
@@ -26,7 +26,8 @@ metadata {
     capability "Refresh"
     capability "Temperature Measurement"
     capability "Sensor"
-        
+    capability "Relative Humidity Measurement"
+
       command "heatLevelUp"
     command "heatLevelDown"
     command "coolLevelUp"
@@ -51,19 +52,19 @@ metadata {
             )
         }
         standardTile("thermostatMode", "device.thermostatMode", inactiveLabel: false, canChangeIcon: true) {
-        	state "off", label:'${name}', action:"thermostat.cool", icon: "st.Outdoor.outdoor19"
+          state "off", label:'${name}', action:"thermostat.cool", icon: "st.Outdoor.outdoor19"
             state "cool", label:'${name}', action:"thermostat.heat", icon: "st.Weather.weather7", backgroundColor: '#003CEC'
-            state "heat", label:'${name}', action:"thermostat.auto", icon: "st.Weather.weather14", backgroundColor: '#E14902'  
+            state "heat", label:'${name}', action:"thermostat.auto", icon: "st.Weather.weather14", backgroundColor: '#E14902'
             state "auto", label:'${name}', action:"thermostat.off", icon: "st.Weather.weather3", backgroundColor: '#44b621'
         }
         standardTile("thermostatFanMode", "device.thermostatFanMode", inactiveLabel: false, canChangeIcon: true) {
             state "auto", label:'${name}', action:"thermostat.fanOn", icon: "st.Appliances.appliances11"
             state "on", label:'${name}', action:"thermostat.fanAuto", icon: "st.Appliances.appliances11", backgroundColor: '#44b621'
-        
+
         }
 
         controlTile("coolSliderControl", "device.coolingSetpoint", "slider", height: 3, width: 1, inactiveLabel: false) {
-            state "setCoolingSetpoint", label:'Set temperarure to', action:"thermostat.setCoolingSetpoint", 
+            state "setCoolingSetpoint", label:'Set temperarure to', action:"thermostat.setCoolingSetpoint",
             backgroundColors:[
                 [value: 31, color: "#153591"],
                 [value: 44, color: "#1e9cbb"],
@@ -72,9 +73,9 @@ metadata {
                 [value: 84, color: "#f1d801"],
                 [value: 95, color: "#d04e00"],
                 [value: 96, color: "#bc2323"]
-            ]               
+            ]
         }
-        valueTile("coolingSetpoint", "device.coolingSetpoint", inactiveLabel: false) 
+        valueTile("coolingSetpoint", "device.coolingSetpoint", inactiveLabel: false)
     {
       state "default", label:'Cool @${currentValue}°F', unit:"F",
        backgroundColors:
@@ -86,9 +87,9 @@ metadata {
         [value: 84, color: "#f1d801"],
         [value: 95, color: "#d04e00"],
         [value: 96, color: "#bc2323"]
-      ]   
+      ]
     }
-        valueTile("heatingSetpoint", "device.heatingSetpoint", inactiveLabel: false) 
+        valueTile("heatingSetpoint", "device.heatingSetpoint", inactiveLabel: false)
     {
       state "default", label:'Heat @${currentValue}°F', unit:"F",
        backgroundColors:
@@ -100,22 +101,26 @@ metadata {
         [value: 84, color: "#f1d801"],
         [value: 95, color: "#d04e00"],
         [value: 96, color: "#bc2323"]
-      ]   
+      ]
     }
-    
-        
-        //tile added for operating state - Create the tiles for each possible state, look at other examples if you wish to change the icons here. 
-        
+
+
+        //tile added for operating state - Create the tiles for each possible state, look at other examples if you wish to change the icons here.
+
         standardTile("thermostatOperatingState", "device.thermostatOperatingState", inactiveLabel: false) {
             state "heating", label:'${name}'
-            state "cooling", label:'${name}' 
+            state "cooling", label:'${name}'
             state "idle", label:'${name}'
         }
-        
+
+        valueTile("humidity", "device.humidity", inactiveLabel: false, decoration: "flat") {
+      state "default", label:'${currentValue}%', unit:"Humidity"
+    }
+
         standardTile("refresh", "device.thermostatMode", inactiveLabel: false, decoration: "flat") {
             state "default", action:"polling.poll", icon:"st.secondary.refresh"
         }
-        
+
         standardTile("heatLevelUp", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false) {
                         state "heatLevelUp", label:'  ', action:"heatLevelUp", icon:"st.thermostat.thermostat-up"
         }
@@ -127,15 +132,15 @@ metadata {
         }
         standardTile("coolLevelDown", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false) {
                         state "coolLevelDown", label:'  ', action:"coolLevelDown", icon:"st.thermostat.thermostat-down"
-        }        
+        }
         main "temperature"
-        details(["temperature", "thermostatMode", "thermostatFanMode",   "heatLevelUp", "heatingSetpoint" , "heatLevelDown", "coolLevelUp","coolingSetpoint", "coolLevelDown" ,"thermostatOperatingState", "refresh",])
+        details(["temperature", "thermostatMode", "thermostatFanMode", "heatLevelDown", "heatingSetpoint", "heatLevelUp", "coolLevelDown","coolingSetpoint", "coolLevelUp", "thermostatOperatingState", "humidity", "refresh"])
     }
 }
 
 def coolLevelUp(){
     int nextLevel = device.currentValue("coolingSetpoint") + 1
-    
+
     if( nextLevel > 99){
       nextLevel = 99
     }
@@ -145,7 +150,7 @@ def coolLevelUp(){
 
 def coolLevelDown(){
     int nextLevel = device.currentValue("coolingSetpoint") - 1
-    
+
     if( nextLevel < 50){
       nextLevel = 50
     }
@@ -155,7 +160,7 @@ def coolLevelDown(){
 
 def heatLevelUp(){
     int nextLevel = device.currentValue("heatingSetpoint") + 1
-    
+
     if( nextLevel > 90){
       nextLevel = 90
     }
@@ -165,7 +170,7 @@ def heatLevelUp(){
 
 def heatLevelDown(){
     int nextLevel = device.currentValue("heatingSetpoint") - 1
-    
+
     if( nextLevel < 40){
       nextLevel = 40
     }
@@ -177,12 +182,12 @@ def heatLevelDown(){
 
 // parse events into attributes
 def parse(String description) {
-    
+
 }
 
 // handle commands
 def setHeatingSetpoint(temp) {
-  data.SystemSwitch = 'null' 
+  data.SystemSwitch = 'null'
     data.HeatSetpoint = temp
     data.CoolSetpoint = 'null'
     data.HeatNextPeriod = 'null'
@@ -197,11 +202,11 @@ def setHeatingSetpoint(temp) {
         sendEvent(name: 'heatingSetpoint', value: temp as Integer)
 
     }
-        
+
 }
 
 def setCoolingSetpoint(temp) {
-  data.SystemSwitch = 'null' 
+  data.SystemSwitch = 'null'
     data.HeatSetpoint = 'null'
     data.CoolSetpoint = temp
     data.HeatNextPeriod = 'null'
@@ -210,7 +215,7 @@ def setCoolingSetpoint(temp) {
     data.StatusCool='1'
     data.FanMode = 'null'
   setStatus()
-    
+
     if(data.SetStatus==1)
   {
         sendEvent(name: 'coolingSetpoint', value: temp as Integer)
@@ -219,7 +224,7 @@ def setCoolingSetpoint(temp) {
 }
 
 def setTargetTemp(temp) {
-  data.SystemSwitch = 'null' 
+  data.SystemSwitch = 'null'
     data.HeatSetpoint = temp
     data.CoolSetpoint = temp
     data.HeatNextPeriod = 'null'
@@ -251,7 +256,7 @@ def cool() {
 }
 
 def setThermostatMode(mode) {
-  data.SystemSwitch = mode 
+  data.SystemSwitch = mode
     data.HeatSetpoint = 'null'
     data.CoolSetpoint = 'null'
     data.HeatNextPeriod = 'null'
@@ -261,7 +266,7 @@ def setThermostatMode(mode) {
     data.FanMode = 'null'
 
   setStatus()
-    
+
       def switchPos
 
         if(mode==1)
@@ -276,7 +281,7 @@ def setThermostatMode(mode) {
   {
         sendEvent(name: 'thermostatMode', value: switchPos)
     }
-    
+
 }
 
 def fanOn() {
@@ -291,9 +296,9 @@ def fanCirculate() {
     setThermostatFanMode(2)
 }
 
-def setThermostatFanMode(mode) {    
-  
-  data.SystemSwitch = 'null' 
+def setThermostatFanMode(mode) {
+
+  data.SystemSwitch = 'null'
     data.HeatSetpoint = 'null'
     data.CoolSetpoint = 'null'
     data.HeatNextPeriod = 'null'
@@ -313,7 +318,7 @@ def setThermostatFanMode(mode) {
 
   if(data.SetStatus==1)
   {
-      sendEvent(name: 'thermostatFanMode', value: fanMode)    
+      sendEvent(name: 'thermostatFanMode', value: fanMode)
     }
 
 }
@@ -331,7 +336,7 @@ def setStatus() {
 def today= new Date()
 log.debug "https://mytotalconnectcomfort.com/portal/Device/SubmitControlScreenChanges"
 
-    
+
     def params = [
         uri: "https://mytotalconnectcomfort.com/portal/Device/SubmitControlScreenChanges",
         headers: [
@@ -346,15 +351,16 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/SubmitControlScreenCh
               'X-Requested-With': 'XMLHttpRequest',
               'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36',
               'Cookie': data.cookiess        ],
-        body: [ DeviceID: "${settings.honeywelldevice}", SystemSwitch : data.SystemSwitch ,HeatSetpoint : data.HeatSetpoint, CoolSetpoint: data.CoolSetpoint, HeatNextPeriod: data.HeatNextPeriod,CoolNextPeriod:data.CoolNextPeriod,StatusHeat:data.StatusHeat,StatusCool:data.StatusCool,FanMode:data.FanMode]
+        body: [ DeviceID: "${settings.honeywelldevice}", SystemSwitch : data.SystemSwitch , HeatSetpoint: data.HeatSetpoint, CoolSetpoint: data.CoolSetpoint, HeatNextPeriod: data.HeatNextPeriod, CoolNextPeriod: data.CoolNextPeriod, StatusHeat: '2', StatusCool: '2', FanMode: data.FanMode]
 
 ]
 
+  log.debug "Posting " + params.body
     httpPost(params) { response ->
         log.debug "Request was successful, $response.status"
- 
+
     }
-    
+
     log.debug "SetStatus is 1 now"
     data.SetStatus = 1
 
@@ -384,9 +390,9 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
     ]
 
     httpGet(params) { response ->
-        log.debug "Request was successful, $response.status"
+        log.debug "Request was successful, $response.data.latestData.uiData"
 
-        
+
     def curTemp = response.data.latestData.uiData.DispTemperature
         def fanMode = response.data.latestData.fanData.fanMode
         def switchPos = response.data.latestData.uiData.SystemSwitchPosition
@@ -394,25 +400,21 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         def heatSetPoint = response.data.latestData.uiData.HeatSetpoint
         def statusCool = response.data.latestData.uiData.StatusCool
         def statusHeat = response.data.latestData.uiData.StatusHeat
-        
-
-
-        
-        
+    def IndoorHumidity = response.data.latestData.uiData.IndoorHumidity
         def operatingState = "idle"
         if(statusCool == 1 && switchPos == 3) {
             operatingState = "cooling"
         } else if (statusHeat == 1 && switchPos == 1) {
             operatingState = "heating"
         }
-        
-        
+
+
         log.debug curTemp
         log.debug fanMode
         log.debug switchPos
-       
+
     //fan mode 0=auto, 2=circ, 1=on
-        
+
         if(fanMode==0)
           fanMode = 'auto'
         if(fanMode==1)
@@ -434,10 +436,7 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         sendEvent(name: 'coolingSetpoint', value: coolSetPoint as Integer)
         sendEvent(name: 'heatingSetpoint', value: heatSetPoint as Integer)
         sendEvent(name: 'temperature', value: curTemp as Integer, state: switchPos)
-        
-       
-
- 
+      sendEvent(name: 'humidity', value: IndoorHumidity as Integer)
     }
 
 }
@@ -457,11 +456,11 @@ def refresh() {
     getStatus()
 }
 
-def login() {  
+def login() {
   log.debug "Executing 'login'"
-      
 
-        
+
+
     def params = [
         uri: 'https://mytotalconnectcomfort.com/portal',
         headers: [
@@ -491,7 +490,7 @@ def login() {
         log.debug "cookies: $data.cookiess"
 
     }
-    
+
 
 }
 
@@ -500,7 +499,7 @@ def isLoggedIn() {
         log.debug "No data.auth"
         return false
     }
-    
+
     def now = new Date().getTime();
     return data.auth.expires_in > now
 }
