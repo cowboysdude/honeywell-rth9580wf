@@ -47,8 +47,7 @@ metadata {
                 [value: 84, color: "#f1d801"],
                 [value: 95, color: "#d04e00"],
                 [value: 96, color: "#bc2323"]
-            ]
-            )
+            ])
         }
         standardTile("thermostatMode", "device.thermostatMode", inactiveLabel: false, canChangeIcon: true) {
             state "off",  label: '${name}', action: "thermostat.cool", icon: "st.Outdoor.outdoor19"
@@ -126,8 +125,28 @@ metadata {
         standardTile("coolLevelDown", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false) {
             state "coolLevelDown", label:'  ', action: "coolLevelDown", icon: "st.thermostat.thermostat-down"
         }
-        main "temperature"
-        details(["temperature", "thermostatMode", "thermostatFanMode", "heatLevelDown", "heatingSetpoint", "heatLevelUp", "coolLevelDown","coolingSetpoint", "coolLevelUp", "thermostatOperatingState", "humidity", "refresh"])
+
+        // These tiles can be shown on the summary "Things" page
+        main([
+            "temperature",
+            "humidity"
+        ])
+
+        // Sequence of tiles on details page
+        details([
+            "temperature",
+            "thermostatMode",
+            "thermostatFanMode",
+            "heatLevelDown",
+            "heatingSetpoint",
+            "heatLevelUp",
+            "coolLevelDown",
+            "coolingSetpoint",
+            "coolLevelUp",
+            "thermostatOperatingState",
+            "humidity",
+            "refresh"
+        ])
     }
 }
 
