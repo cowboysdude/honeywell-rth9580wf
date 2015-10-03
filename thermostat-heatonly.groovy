@@ -20,7 +20,7 @@ preferences {
 }
 
 metadata {
-    definition (name: "Total Comfort API", namespace: "Total Comfort API", author: "Eric Thomas") {
+    definition (name: "Total Comfort API - Heat Only", namespace: "Total Comfort API", author: "Eric Thomas") {
         capability "Polling"
         capability "Thermostat"
         capability "Refresh"
@@ -60,31 +60,6 @@ metadata {
             state "on",   label: '${name}', action:"thermostat.fanAuto", icon: "st.Appliances.appliances11", backgroundColor: '#44b621'
         }
 
-        controlTile("coolSliderControl", "device.coolingSetpoint", "slider", height: 3, width: 1, inactiveLabel: false) {
-            state "setCoolingSetpoint", label:'Set temperarure to', action:"thermostat.setCoolingSetpoint",
-            backgroundColors: [
-                [value: 31, color: "#153591"],
-                [value: 44, color: "#1e9cbb"],
-                [value: 59, color: "#90d2a7"],
-                [value: 74, color: "#44b621"],
-                [value: 84, color: "#f1d801"],
-                [value: 95, color: "#d04e00"],
-                [value: 96, color: "#bc2323"]
-            ]
-        }
-        valueTile("coolingSetpoint", "device.coolingSetpoint", inactiveLabel: false)
-        {
-            state "default", label:'Cool @${currentValue}°F', unit:"F",
-            backgroundColors: [
-                [value: 31, color: "#153591"],
-                [value: 44, color: "#1e9cbb"],
-                [value: 59, color: "#90d2a7"],
-                [value: 74, color: "#44b621"],
-                [value: 84, color: "#f1d801"],
-                [value: 95, color: "#d04e00"],
-                [value: 96, color: "#bc2323"]
-            ]
-        }
         valueTile("heatingSetpoint", "device.heatingSetpoint", inactiveLabel: false)
         {
             state "default", label:'Heat @${currentValue}°F', unit:"F",
@@ -140,9 +115,6 @@ metadata {
             "heatLevelDown",
             "heatingSetpoint",
             "heatLevelUp",
-            "coolLevelDown",
-            "coolingSetpoint",
-            "coolLevelUp",
             "thermostatOperatingState",
             "humidity",
             "refresh"
