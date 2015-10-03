@@ -20,7 +20,7 @@ preferences {
 }
 
 metadata {
-    definition (name: "Total Comfort API", namespace: "Total Comfort API", author: "Eric Thomas") {
+    definition (name: "Total Comfort API - Heat/Cool", namespace: "Total Comfort API", author: "Eric Thomas") {
         capability "Polling"
         capability "Thermostat"
         capability "Refresh"
