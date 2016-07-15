@@ -27,6 +27,8 @@ metadata {
         capability "Temperature Measurement"
         capability "Sensor"
         capability "Relative Humidity Measurement"
+        capability "Thermostat Heating Setpoint"
+        capability "Thermostat Cooling Setpoint"
 
         command "heatLevelUp"
         command "heatLevelDown"
@@ -199,7 +201,7 @@ def parse(String description) {
 def setHeatingSetpoint(temp) {
     int heatBias = -2
     data.SystemSwitch = 'null'
-    data.HeatSetpoint = temp + heatBias
+    data.HeatSetpoint = temp.toInteger() + heatBias
     data.CoolSetpoint = 'null'
     data.HeatNextPeriod = 'null'
     data.CoolNextPeriod = 'null'

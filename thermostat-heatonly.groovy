@@ -27,6 +27,7 @@ metadata {
         capability "Temperature Measurement"
         capability "Sensor"
         capability "Relative Humidity Measurement"
+        capability "Thermostat Heating Setpoint"
 
         command "heatLevelUp"
         command "heatLevelDown"
