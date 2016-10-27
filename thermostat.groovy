@@ -199,7 +199,7 @@ def parse(String description) {
 
 // handle commands
 def setHeatingSetpoint(temp) {
-    int heatBias = -2
+    int heatBias = 0
     data.SystemSwitch = 'null'
     data.HeatSetpoint = temp.toInteger() + heatBias
     data.CoolSetpoint = 'null'
